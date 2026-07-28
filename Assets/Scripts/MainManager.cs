@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,17 +13,25 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text HighScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
     private int m_Points;
     
     private bool m_GameOver = false;
+    public string player_name;
+    public int high_score;
+    public string best_player;
 
-    
     // Start is called before the first frame update
+
     void Start()
     {
+        player_name = MenuManager.Instance.player_name;
+        best_player = MenuManager.Instance.best_player;
+        high_score = MenuManager.Instance.high_score;
+        UpdateHighScore();
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -45,7 +55,7 @@ public class MainManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 m_Started = true;
-                float randomDirection = Random.Range(-1.0f, 1.0f);
+                float randomDirection = UnityEngine.Random.Range(-1.0f, 1.0f);
                 Vector3 forceDir = new Vector3(randomDirection, 1, 0);
                 forceDir.Normalize();
 
@@ -70,7 +80,18 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        MenuManager.Instance.SaveHighScore(player_name, m_Points);
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+    public void UpdateHighScore()
+    {
+        if (player_name != "")
+        {
+            HighScoreText.text = "Best score: " + best_player + " : " + high_score;
+        } else
+        {
+            HighScoreText.text = "No best score yet!";
+        }
     }
 }
